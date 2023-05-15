@@ -1,0 +1,8 @@
+version: '3'
+services:
+  powerplant-api:
+    container_name: powerplant-api
+    image: snyssen/powerplant-api
+    build: .
+    ports:
+      - 8888:80

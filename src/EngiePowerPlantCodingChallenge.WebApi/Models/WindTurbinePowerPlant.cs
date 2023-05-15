@@ -11,7 +11,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
     {
         public string Name { get; }
 
-        public PowerPlantType Type => throw new NotImplementedException();
+        public PowerPlantType Type => PowerPlantType.WindTurbine;
 
         public double Efficiency => 1;
 
@@ -27,7 +27,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
         /// <value></value>
         private double CurrentWind { get; set; } = 0;
 
-        public WindTurbinePowerPlant(string name, double theoreticalPMax, double currentWind)
+        public WindTurbinePowerPlant(string name, double theoreticalPMax, double currentWind = 0)
         {
             Name = name;
             _theoreticalPMax = theoreticalPMax;

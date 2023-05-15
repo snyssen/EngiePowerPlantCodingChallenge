@@ -59,6 +59,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models // TODO: Move to business
                     continue; // Expected load is reached!
                 }
 
+                // TODO: Handle more complex cases where last power plant cannot handle the missing load
                 // Power plant cannot achieve the missing load.
                 // Loop through previous until one can
                 // for (int i = powerPlants.Count - 1; i >= 0; i--)

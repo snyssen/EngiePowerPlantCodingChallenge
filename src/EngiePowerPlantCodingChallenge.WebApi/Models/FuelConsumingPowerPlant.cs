@@ -14,6 +14,10 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
         public double Efficiency { get; }
         public double PMin { get; }
         public double PMax { get; }
+        public abstract FuelType FuelType { get; }
+
+        private double _currentLoad = 0;
+        public double CurrentLoad => _currentLoad;
 
         protected FuelConsumingPowerPlant(string name, double efficiency, double pMin, double pMax)
         {
@@ -23,7 +27,15 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
             PMax = pMax;
         }
 
-        public double GetPricePerMWh(FuelPrice price)
-            => price.Price / Efficiency; // TODO: Check if input fuel type is correct for powerplant type
+        public double GetCostOfMWh(FuelPrice price)
+            => price.Price / Efficiency; // TODO: Check if input fuel type is correct for power plant type
+
+        public bool TrySetLoad(double load)
+        {
+            if (load != 0 && (load < PMin || load > PMax))
+                return false;
+            _currentLoad = load;
+            return true;
+        }
     }
 }

@@ -6,6 +6,7 @@ using EngiePowerPlantCodingChallenge.WebApi.DTO;
 using EngiePowerPlantCodingChallenge.WebApi.Enums;
 using EngiePowerPlantCodingChallenge.WebApi.Factories;
 using EngiePowerPlantCodingChallenge.WebApi.Interfaces;
+using EngiePowerPlantCodingChallenge.WebApi.Models;
 using Xunit;
 
 namespace EngiePowerPlantCodingChallenge.UnitTests
@@ -22,8 +23,9 @@ namespace EngiePowerPlantCodingChallenge.UnitTests
                 100,
                 460
             );
+            List<FuelPrice> fuels = new();
 
-            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto);
+            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto, fuels);
 
             Assert.Equal(PowerPlantType.GasFired, powerPlant.Type);
         }
@@ -38,8 +40,9 @@ namespace EngiePowerPlantCodingChallenge.UnitTests
                 0,
                 16
             );
+            List<FuelPrice> fuels = new();
 
-            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto);
+            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto, fuels);
 
             Assert.Equal(PowerPlantType.TurboJet, powerPlant.Type);
         }
@@ -53,8 +56,9 @@ namespace EngiePowerPlantCodingChallenge.UnitTests
                 0,
                 150
             );
+            List<FuelPrice> fuels = new() { new FuelPrice(0.4, FuelType.Wind) };
 
-            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto);
+            IPowerPlant powerPlant = PowerPlantFactory.FromPowerPowerPlantDTO(dto, fuels);
 
             Assert.Equal(PowerPlantType.WindTurbine, powerPlant.Type);
         }

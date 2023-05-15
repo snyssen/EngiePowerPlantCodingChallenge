@@ -13,5 +13,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
         }
 
         public override PowerPlantType Type => PowerPlantType.GasFired;
+
+        public override FuelType FuelType => FuelType.Gas;
     }
 }

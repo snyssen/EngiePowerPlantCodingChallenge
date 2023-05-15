@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EngiePowerPlantCodingChallenge.WebApi.Enums;
+using EngiePowerPlantCodingChallenge.WebApi.Factories;
+using EngiePowerPlantCodingChallenge.WebApi.Interfaces;
 using EngiePowerPlantCodingChallenge.WebApi.Models;
 using EngiePowerPlantCodingChallenge.WebApi.Requests;
 
@@ -28,6 +30,16 @@ namespace EngiePowerPlantCodingChallenge.WebApi.DTO
                     pp.PMin,
                     pp.PMax
                 ))
+            );
+    }
+
+    public static class PowerPlanRequestDTOExtensions
+    {
+        public static PowerPlan ToPowerPlan(this PowerPlanRequestDTO dto, IEnumerable<FuelPrice> fuels)
+            => new(
+                dto.Load,
+                dto.FuelPrices,
+                dto.PowerPlants.Select(pp => PowerPlantFactory.FromPowerPowerPlantDTO(pp, fuels))
             );
     }
 

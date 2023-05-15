@@ -19,7 +19,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
 
         private double _theoreticalPMax;
         public double PMax => CurrentWind > 0 && _theoreticalPMax > 0
-            ? _theoreticalPMax * CurrentWind
+            ? Math.Round(_theoreticalPMax * CurrentWind, 1)
             : 0;
         /// <summary>
         /// Current wind defines the maximum output the turbine can provide
@@ -27,14 +27,27 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models
         /// <value></value>
         private double CurrentWind { get; set; } = 0;
 
-        public WindTurbinePowerPlant(string name, double theoreticalPMax, double currentWind = 0)
+        public FuelType FuelType => FuelType.Wind;
+
+        private double _currentLoad = 0;
+        public double CurrentLoad => _currentLoad;
+
+        public WindTurbinePowerPlant(string name, double theoreticalPMax, double currentWind)
         {
             Name = name;
             _theoreticalPMax = theoreticalPMax;
             CurrentWind = currentWind;
         }
 
-        public double GetPricePerMWh(FuelPrice price)
+        public double GetCostOfMWh(FuelPrice price)
             => 0; // Generating power using a wind turbine is always free
+
+        public bool TrySetLoad(double load)
+        {
+            if (load != PMin && load != PMax)
+                return false;
+            _currentLoad = load;
+            return true;
+        }
     }
 }

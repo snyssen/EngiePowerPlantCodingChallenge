@@ -1,5 +1,3 @@
-using Ardalis.SmartEnum;
-
 namespace EngiePowerPlantCodingChallenge.WebApi.Enums
 {
     public enum PowerPlantType

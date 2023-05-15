@@ -11,7 +11,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Factories
 {
     public static class PowerPlantFactory
     {
-        public static IPowerPlant FromPowerPowerPlantDTO(PowerPlantDTO dto)
+        public static IPowerPlant FromPowerPowerPlantDTO(PowerPlantDTO dto, IEnumerable<FuelPrice> fuels)
         {
             // I'm using a switch due to time constraints, but in a more complex application this could use MEF for example
             // to instantiate the correct power plant class based on the provided type
@@ -22,7 +22,10 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Factories
                 case PowerPlantType.TurboJet:
                     return new TurboJetPowerPlant(dto.Name, dto.Efficiency, dto.PMin, dto.PMax);
                 case PowerPlantType.WindTurbine:
-                    return new WindTurbinePowerPlant(dto.Name, dto.PMax); // TODO: Find a way to input current wind
+                    return new WindTurbinePowerPlant(dto.Name, dto.PMax,
+                        fuels.FirstOrDefault(f => f.Type == FuelType.Wind)?.Price
+                        ?? throw new ArgumentException($"{nameof(WindTurbinePowerPlant)} needs to receive the current wind percentage to be instantiated, which was not included in given fuels", nameof(fuels))
+                    );
                 default:
                     throw new NotSupportedException($"Power plant of type {dto.Type} is not supported");
             }

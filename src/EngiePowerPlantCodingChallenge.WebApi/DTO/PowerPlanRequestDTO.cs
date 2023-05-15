@@ -14,32 +14,15 @@ namespace EngiePowerPlantCodingChallenge.WebApi.DTO
         double Load,
         IEnumerable<FuelPrice> FuelPrices,
         IEnumerable<PowerPlantDTO> PowerPlants
-    )
-    {
-        public static PowerPlanRequestDTO FromRequest(PowerPlanRequest request)
-            => new(
-                request.Load,
-                request.Fuels.Select(f => new FuelPrice(
-                    f.Value,
-                    FuelTypeHelper.FromString(f.Key.Substring(0, f.Key.IndexOf('(')))
-                )),
-                request.Powerplants.Select(pp => new PowerPlantDTO(
-                    pp.Name,
-                    pp.Type,
-                    pp.Efficiency,
-                    pp.PMin,
-                    pp.PMax
-                ))
-            );
-    }
+    );
 
     public static class PowerPlanRequestDTOExtensions
     {
-        public static PowerPlan ToPowerPlan(this PowerPlanRequestDTO dto, IEnumerable<FuelPrice> fuels)
+        public static PowerPlan ToPowerPlan(this PowerPlanRequestDTO dto)
             => new(
                 dto.Load,
                 dto.FuelPrices,
-                dto.PowerPlants.Select(pp => PowerPlantFactory.FromPowerPowerPlantDTO(pp, fuels))
+                dto.PowerPlants.Select(pp => PowerPlantFactory.FromPowerPowerPlantDTO(pp, dto.FuelPrices))
             );
     }
 

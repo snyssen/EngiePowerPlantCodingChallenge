@@ -51,7 +51,7 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models // TODO: Move to business
                 }
 
                 // We are above the expected load, try setting current power plant to a lower value so exact load can be reached
-                double missingLoadForExpectation = Math.Round(ExpectedLoad - currentLoad, 1);
+                double missingLoadForExpectation = Math.Round(ExpectedLoad - currentLoad, 2);
                 if (powerPlant.TrySetLoad(missingLoadForExpectation))
                 {
                     currentLoad += powerPlant.CurrentLoad;
@@ -59,21 +59,38 @@ namespace EngiePowerPlantCodingChallenge.WebApi.Models // TODO: Move to business
                     continue; // Expected load is reached!
                 }
 
-                // TODO: Handle more complex cases where last power plant cannot handle the missing load
-                // Power plant cannot achieve the missing load.
-                // Loop through previous until one can
-                // for (int i = powerPlants.Count - 1; i >= 0; i--)
-                // {
-                //     if (!powerPlants[i].TrySetLoad(missingLoadForExpectation))
-                //         continue;
+                // Loop through previous plants and see if they can handle their currentLoad minus the current plant minimum load.
+                // If they can, then current plant should be able to take min load + missing load
+                double currentMinimumLoad = powerPlant.PMin;
+                bool wasAbleToOffsetLoad = false;
+                for (int i = powerPlants.Count - 1; i >= 0; i--)
+                {
+                    double reducedLoad = powerPlants[i].CurrentLoad - currentMinimumLoad;
+                    if (powerPlants[i].TrySetLoad(reducedLoad))
+                    {
+                        wasAbleToOffsetLoad = true;
+                        break;
+                    }
+                }
 
-                //     // Recalculate load now that a previous power plant has taken the missing load, and re-evaluate 
-                //     currentLoad = powerPlants.Sum(pp => pp.CurrentLoad);
+                // Since we removed the minimum load of current plant from a previous plant load,
+                // we should now be missing this minimum load + the missing load. Furthermore, this should be above the minimum
+                // load of the current plant (if it can have variable load)
+                if (wasAbleToOffsetLoad)
+                {
+                    missingLoadForExpectation = Math.Round(currentMinimumLoad + missingLoadForExpectation, 2);
+                    powerPlant.TrySetLoad(missingLoadForExpectation); // If it fails it will stay at 0 load
+                    powerPlants.Add(powerPlant); // So we simply add it, no matter if it is set at 0. Next loops should fix missing load if it is at all possible.
+                }
 
-                //     break;
-                // }
+                // Finally, force a recalculation of current load. If current plant could not take load, we still won't be meeting the expected load.
+                // Next plant will try to remediate that if it is possible.
+                // If current plant was able to take load, then we should have reached the expected load and next plants output will be set to 0
+                currentLoad = powerPlants.Sum(pp => pp.CurrentLoad);
             }
 
+            // We could check if the algorithm was able to successfully achieve a result, but since it might be impossible in some cases
+            // (for example when only given wind turbines with no variable load), I prefer to always return the (closest) result, even if it's incorrect
             // if (currentLoad != ExpectedLoad) throw new InvalidOperationException($"Expected load ({ExpectedLoad}) cannot be achieved with given power plants");
 
             return powerPlants.Select(pp => PowerPlantOutput.FromPowerPlant(pp));
